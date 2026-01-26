@@ -1,0 +1,2 @@
+run:
+	cd Office && java -jar Office.jar
