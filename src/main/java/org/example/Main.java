@@ -2,40 +2,39 @@ package org.example;
 
 import java.sql.*;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        String currentDir = System.getProperty("user.dir");
+        int departmentId = Integer.parseInt(args[0]);
         String url = "jdbc:h2:.\\Office\\Office";
-        try {
-            Connection con = DriverManager.getConnection(url);
+        try (Connection con = DriverManager.getConnection(url)) {
             if (con != null) {
                 System.out.println("Connection opened");
             } else {
                 System.out.println("Failed to make connection");
             }
             // Создание оператора для выполнения SQL-запросов
-            Statement statement = con.createStatement();
+            Statement statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
 
-            //3. Выведите на экран количество сотрудников в IT-отделе
-            // Выполнение SQL-запроса и получение результата в виде ResultSet
-            ResultSet rs = statement.executeQuery("Select count(id) from EMPLOYEE e  Where DEPARTMENTID  = 2;");
+            // «При удалении отдела (Department)
+            //информация о всех сотрудниках, работающих в этом отделе, должна быть удалена»
+
+            PreparedStatement ps = con.prepareStatement("Select count(id) from EMPLOYEE e  Where DEPARTMENTID  = ?;");
+            ps.setInt(1, departmentId);
+            ResultSet rs = ps.executeQuery();
             int employeeCount = rs.next() ? rs.getInt(1) : 0;
-            System.out.println("количество сотрудников в IT-отделе: " + employeeCount);
-            con.close();
-            //sampocus k 6aue данных выполнять здесь
+            System.out.println("количество сотрудников в отделе(id#" + departmentId + "): " + employeeCount);
+            statement.close();
+
+
         } catch (
                 SQLException ex) {
             System.out.println(ex);
         }
     }
-    //Задание #1. JDBC Тесты. Сотрудники
-    //Подключитесь программно к базе данных и выполните следующие операции:
-    //
-    //Найдите ID сотрудника с именем Ann. Если такой сотрудник только один, то установите его
-    //департамент в HR.
-    //Проверьте имена всех сотрудников. Если чьё-то имя написано с маленькой буквы, исправьте её на большую. Выведите на экран количество исправленных имён.
-    //Каждая задача
-    //оценивается в один балл. Ответ оформите в виде Java-метода c кодом запроса. Максимум 3 балла.
 }
+//Выполните действия по порядку:
+//
+//Запустите приложение.
+//Удалите один из отделов.
+//Выполните проверку содержимого базы.
