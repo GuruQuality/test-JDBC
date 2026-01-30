@@ -59,7 +59,7 @@ public class Main {
                     // Обновляем записи в базе
                     PreparedStatement pStmt = con.prepareStatement("UPDATE EMPLOYEE SET name = ? WHERE id = ?");
                     // ПРАВИЛЬНО:
-                    pStmt.setString(1,fixedName);
+                    pStmt.setString(1, fixedName);
                     pStmt.setInt(2, id);
                     pStmt.executeUpdate();
                     count++;
@@ -75,9 +75,9 @@ public class Main {
             System.out.println("количество сотрудников в IT-отделе: " + employeeCount);
             statement.close();
             //sampocus k 6aue данных выполнять здесь
-        } catch (
-                SQLException ex) {
+        } catch (SQLException ex) {
             System.out.println(ex);
+            throw new RuntimeException(ex);
         }
     }
 }
